@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>한솔 해인이의 영어 친구 ABC</title>
+<style>
+:root{--bg:#fff7e6;--ink:#4a3b2a;--p:#ff7aa8;--b:#5bb8ff;--g:#58d68d;--y:#ffd54a;color-scheme:light}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Jua","Apple SD Gothic Neo","Malgun Gothic",sans-serif;text-align:center}
+.wrap{max-width:560px;margin:0 auto;padding:14px}
+h1{font-size:30px;margin:8px 0}
+.btn{border:0;border-radius:24px;padding:14px 20px;font-size:22px;font-family:inherit;color:#fff;background:var(--p);box-shadow:0 5px 0 rgba(0,0,0,.18);cursor:pointer;margin:6px}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,.18)}
+.b{background:var(--b)}.g{background:var(--g)}.y{background:var(--y);color:var(--ink)}
+.menu .btn{display:block;width:100%;font-size:28px;padding:22px;margin:14px 0}
+select{font-size:20px;padding:10px;border-radius:16px;border:3px solid #ffe0a3;font-family:inherit;width:100%;background:#fff;color:var(--ink)}
+.card{background:#fff;border-radius:32px;padding:20px;box-shadow:0 6px 0 rgba(0,0,0,.08);margin:10px 0}
+.emoji{font-size:120px;line-height:1.15;cursor:pointer;user-select:none;min-height:140px}
+.word{font-size:52px;font-weight:bold;color:var(--p);margin:4px 0}
+.ko{font-size:26px;opacity:.8}
+.top{display:flex;justify-content:space-between;align-items:center}
+.home{font-size:20px;padding:8px 14px}
+.stars{font-size:22px;min-height:30px}
+.choices{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.choice{background:#fff;border:4px solid #ffe0a3;border-radius:24px;font-size:60px;padding:14px 0;cursor:pointer;min-height:110px;display:flex;align-items:center;justify-content:center}
+.shake{animation:s .4s}@keyframes s{25%{transform:translateX(-10px)}75%{transform:translateX(10px)}}
+.pop{animation:p .5s}@keyframes p{50%{transform:scale(1.25)}}
+.msg{font-size:32px;min-height:42px;margin:8px 0;color:var(--g)}
+.hidden{display:none}
+.note{font-size:15px;opacity:.7;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div id="home" class="menu">
+  <h1>🌈 한솔 해인이의 영어 친구 ABC 🌈</h1>
+  <div style="font-size:90px">🐻</div>
+  <select id="cat"></select>
+  <button class="btn" onclick="show('learn')">📖 배우기</button>
+  <button class="btn b" onclick="show('game')">🎮 게임하기</button>
+  <div class="note" id="vnote"></div>
+</div>
+
+<div id="learn" class="hidden">
+  <div class="top"><button class="btn y home" onclick="show('home')">🏠</button><div class="stars" id="lcount"></div></div>
+  <div class="card">
+    <div class="emoji" id="lemoji" onclick="say(cur().w)"></div>
+    <div class="word" id="lword"></div>
+    <div class="ko" id="lko"></div>
+  </div>
+  <div id="lmsg" class="msg"></div>
+  <button class="btn" onclick="say(cur().w)">🔊 듣기</button>
+  <button class="btn b" onclick="say(cur().w,0.5)">🐢 천천히</button><br>
+  <button class="btn g" onclick="repeat()">🎤 따라해봐!</button><br>
+  <button class="btn y" onclick="move(-1)">◀ 이전</button>
+  <button class="btn y" onclick="move(1)">다음 ▶</button>
+</div>
+
+<div id="game" class="hidden">
+  <div class="top"><button class="btn y home" onclick="show('home')">🏠</button><div class="stars" id="gstars"></div></div>
+  <div class="card">
+    <div style="font-size:24px">들어보고 맞는 그림을 눌러요!</div>
+    <button class="btn" style="font-size:40px;padding:20px 34px" onclick="say(target.w)">🔊</button>
+  </div>
+  <div id="gmsg" class="msg"></div>
+  <div class="choices" id="choices"></div>
+  <div id="end" class="hidden card"><div style="font-size:80px">🏆</div><div class="word" style="font-size:36px">참 잘했어요!</div><button class="btn g" onclick="startGame()">🔁 또 하기</button></div>
+</div>
+
+</div>
+<script>
+/* 단어 데이터 500개: 영단어 + 그림(이모지) + 한글 뜻, 쉼표로 구분 */
+var D=[
+["🐶 동물","dog🐶강아지,cat🐱고양이,bird🐦새,fish🐟물고기,rabbit🐰토끼,bear🐻곰,lion🦁사자,tiger🐯호랑이,elephant🐘코끼리,monkey🐵원숭이,pig🐷돼지,cow🐮소,horse🐴말,sheep🐑양,duck🦆오리,chicken🐔닭,frog🐸개구리,mouse🐭쥐,fox🦊여우,wolf🐺늑대,panda🐼판다,koala🐨코알라,giraffe🦒기린,zebra🦓얼룩말,deer🦌사슴,snake🐍뱀,turtle🐢거북이,whale🐳고래,dolphin🐬돌고래,shark🦈상어,octopus🐙문어,crab🦀게,butterfly🦋나비,bee🐝벌,ant🐜개미,spider🕷️거미,ladybug🐞무당벌레,owl🦉올빼미,penguin🐧펭귄,dinosaur🦖공룡"],
+["🍎 과일·채소","apple🍎사과,banana🍌바나나,grape🍇포도,orange🍊오렌지,strawberry🍓딸기,watermelon🍉수박,peach🍑복숭아,lemon🍋레몬,cherry🍒체리,pear🍐배,pineapple🍍파인애플,melon🍈멜론,kiwi🥝키위,coconut🥥코코넛,mango🥭망고,tomato🍅토마토,carrot🥕당근,potato🥔감자,corn🌽옥수수,onion🧅양파,garlic🧄마늘,broccoli🥦브로콜리,cucumber🥒오이,mushroom🍄버섯,pepper🌶️고추,eggplant🍆가지,peanut🥜땅콩,pumpkin🎃호박,lettuce🥬상추,olive🫒올리브"],
+["🍞 음식·음료","bread🍞빵,rice🍚밥,egg🥚달걀,milk🥛우유,water💧물,juice🧃주스,cheese🧀치즈,cake🍰케이크,cookie🍪쿠키,candy🍬사탕,chocolate🍫초콜릿,pizza🍕피자,hamburger🍔햄버거,hotdog🌭핫도그,fries🍟감자튀김,noodles🍜국수,soup🍲국,sandwich🥪샌드위치,meat🥩고기,bacon🥓베이컨,drumstick🍗닭다리,ice-cream🍦아이스크림,donut🍩도넛,popcorn🍿팝콘,pancake🥞팬케이크,butter🧈버터,honey🍯꿀,salt🧂소금,tea🍵차,coffee☕커피,soda🥤음료수,riceball🍙주먹밥,dumpling🥟만두,sushi🍣초밥,taco🌮타코,salad🥗샐러드,pretzel🥨프레첼,cupcake🧁컵케이크,lollipop🍭막대사탕,waffle🧇와플"],
+["👀 몸","face🙂얼굴,eye👁️눈,ear👂귀,nose👃코,mouth👄입,tooth🦷이,tongue👅혀,hand✋손,foot🦶발,leg🦵다리,arm💪팔,finger👆손가락,hair💇머리카락,brain🧠뇌,heart🫀심장,bone🦴뼈,head🗣️머리,nail💅손톱,lips💋입술"],
+["👪 사람","mom👩엄마,dad👨아빠,grandma👵할머니,grandpa👴할아버지,baby👶아기,boy👦남자아이,girl👧여자아이,man🧔남자,woman👩‍🦰여자,friend🧑‍🤝‍🧑친구,family👪가족,teacher🧑‍🏫선생님,doctor🧑‍⚕️의사,police👮경찰,firefighter🧑‍🚒소방관,chef🧑‍🍳요리사,farmer🧑‍🌾농부,pilot🧑‍✈️조종사,artist🧑‍🎨화가,singer🧑‍🎤가수,king🤴왕,princess👸공주,fairy🧚요정,angel👼천사,clown🤡광대,ghost👻유령,robot🤖로봇,alien👽외계인,santa🎅산타,student🧑‍🎓학생"],
+["🚗 탈것·장소","car🚗자동차,bus🚌버스,train🚆기차,airplane✈️비행기,bicycle🚲자전거,boat⛵보트,ship🚢큰배,taxi🚕택시,truck🚚트럭,fire-truck🚒소방차,ambulance🚑구급차,police-car🚓경찰차,tractor🚜트랙터,helicopter🚁헬리콥터,rocket🚀로켓,motorcycle🏍️오토바이,subway🚇지하철,scooter🛴킥보드,road🛣️도로,house🏠집,school🏫학교,hospital🏥병원,store🏪가게,bank🏦은행,church⛪교회,castle🏰성,tent⛺텐트,playground🛝놀이터,bridge🌉다리,factory🏭공장,hotel🏨호텔,stadium🏟️경기장,traffic-light🚦신호등,gas-station⛽주유소,map🗺️지도"],
+["☀️ 자연·날씨","sun☀️해,moon🌙달,star⭐별,cloud☁️구름,rain🌧️비,snow❄️눈,wind💨바람,rainbow🌈무지개,fire🔥불,mountain⛰️산,sea🌊바다,beach🏖️해변,island🏝️섬,volcano🌋화산,earth🌍지구,tree🌳나무,flower🌸꽃,rose🌹장미,sunflower🌻해바라기,tulip🌷튤립,leaf🍃잎,plant🪴화분,cactus🌵선인장,palm-tree🌴야자수,pine-tree🌲소나무,maple🍁단풍잎,lightning⚡번개,tornado🌪️토네이도,umbrella☂️우산,ice🧊얼음,snowman⛄눈사람,comet☄️혜성,rock🪨바위,shell🐚조개,wood🪵통나무"],
+["✏️ 학교","book📖책,pencil✏️연필,pen🖊️펜,crayon🖍️크레용,paper📄종이,scissors✂️가위,bag🎒가방,ruler📏자,eraser🧽지우개,glue🧴풀,notebook📓공책,alphabet🔤알파벳"],
+["🛏️ 집·물건","chair🪑의자,bed🛏️침대,door🚪문,window🪟창문,clock🕒시계,key🔑열쇠,lamp💡전등,phone📱전화기,computer💻컴퓨터,tv📺텔레비전,camera📷카메라,radio📻라디오,gift🎁선물,balloon🎈풍선,toy🧸장난감,doll🪆인형,kite🪁연,puzzle🧩퍼즐,dice🎲주사위,cards🃏카드,medal🏅메달,trophy🏆트로피,money💰돈,coin🪙동전,letter✉️편지,calendar📅달력,bowl🥣그릇,spoon🥄숟가락,fork🍴포크,cup🥛컵,plate🍽️접시,bottle🍼젖병,toothbrush🪥칫솔,soap🧼비누,tissue🧻휴지,bath🛁욕조,toilet🚽변기,broom🧹빗자루,candle🕯️양초,battery🔋건전지"],
+["🎵 음악","music🎵음악,guitar🎸기타,piano🎹피아노,drum🥁북,trumpet🎺트럼펫,violin🎻바이올린,microphone🎤마이크,headphones🎧헤드폰,bell🔔종,flag🚩깃발"],
+["👕 옷","hat🎩모자,cap🧢야구모자,shirt👕셔츠,pants👖바지,dress👗원피스,shoes👟신발,socks🧦양말,gloves🧤장갑,scarf🧣목도리,coat🧥외투,boots🥾부츠,glasses👓안경,ring💍반지,crown👑왕관"],
+["🎨 색깔·모양","red🔴빨강,yellow🟡노랑,green🟢초록,blue🔵파랑,purple🟣보라,brown🟤갈색,black⚫검정,white⚪하양,pink🩷분홍,gray🩶회색,circle⭕동그라미,square🟦네모,triangle🔺세모,diamond🔷마름모,line➖선"],
+["🔢 숫자","one1️⃣하나,two2️⃣둘,three3️⃣셋,four4️⃣넷,five5️⃣다섯,six6️⃣여섯,seven7️⃣일곱,eight8️⃣여덟,nine9️⃣아홉,ten🔟열,eleven11열하나,twelve12열둘,thirteen13열셋,fourteen14열넷,fifteen15열다섯,sixteen16열여섯,seventeen17열일곱,eighteen18열여덟,nineteen19열아홉,twenty20스물"],
+["😊 감정","happy😊행복한,sad😢슬픈,angry😠화난,scared😨무서운,sleepy😴졸린,surprised😲놀란,shy😳부끄러운,tired🥱피곤한,hungry🤤배고픈,sick🤒아픈,cool😎멋진,love🥰사랑,silly🤪엉뚱한,excited🤩신나는,hot🥵더운,cold🥶추운,bored😑지루한"],
+["🏃 동작","run🏃달리다,walk🚶걷다,jump🤸뛰다,swim🏊수영하다,dance💃춤추다,sing🎶노래하다,eat🍽️먹다,drink🚰마시다,sleep💤자다,wake⏰일어나다,play🎮놀다,read📚읽다,write✍️쓰다,draw🎨그리다,paint🖌️칠하다,cook🍳요리하다,wash🫧씻다,sweep🧹쓸다,open📂열다,look👀보다,listen🔊듣다,touch🤚만지다,clap👏박수치다,wave👋손흔들다,hug🤗안아주다,kiss😘뽀뽀하다,smile😀미소짓다,laugh😂웃다,cry😭울다,think🤔생각하다,throw🥏던지다,catch🤲잡다,kick🥋차다,fly🕊️날다,climb🧗오르다,ride🏇타다,sit🧘앉다,stand🧍서다,point👉가리키다,give🫴주다,buy🛒사다,call📞전화하다,build🧱쌓다,fix🔧고치다,grow🌱자라다,win🥇이기다,help🆘돕다,stop🛑멈추다,go🟢가다,wait⏳기다리다,shout📣소리치다,whisper🤫속삭이다,bake🥧굽다,pour🫗붓다,dive🤿잠수하다,ski⛷️스키타다,skate⛸️스케이트타다,sneeze🤧재채기하다,pray🙏기도하다,celebrate🎉축하하다"],
+["💡 형용사","big🐘큰,small🤏작은,long🐍긴,fast🐆빠른,slow🐌느린,warm♨️따뜻한,wet💦젖은,dry🏜️마른,heavy🏋️무거운,light🪶가벼운,new🆕새로운,old🕰️오래된,dirty💩더러운,soft🧸부드러운,hard🪨단단한,sweet🍭달콤한,sour🍋신,spicy🌶️매운,salty🧂짠,loud📢시끄러운,quiet🤐조용한,full😋배부른,empty🫙빈,high🏔️높은,good👍좋은,bad👎나쁜,beautiful🌺아름다운,pretty🎀예쁜,strong🦾힘센,kind💝친절한,brave🦸용감한,magic🪄마법,safe🛟안전한,dangerous⚠️위험한,same🟰같은,different🔀다른,yes✅네,no❌아니요,many🔢많은,clean✨깨끗한"],
+["⬆️ 위치","up⬆️위,down⬇️아래,left⬅️왼쪽,right➡️오른쪽,in📥안,out📤밖,on🔛위에,back🔙뒤,near📍가까운,far🔭먼,top🔝꼭대기,middle🎯가운데"],
+["⏰ 시간","morning🌅아침,noon🕛정오,afternoon🌇오후,evening🌆저녁,night🌃밤,day🌞낮,today📆오늘,tomorrow⏭️내일,yesterday⏮️어제,week🗓️주,month🈷️달,year🎊해,birthday🎂생일,party🥳파티,spring🌱봄,summer🏖️여름,autumn🍁가을,winter☃️겨울,hour⌛시간,minute⏱️분"],
+["⚽ 운동·놀이","baseball⚾야구,basketball🏀농구,tennis🎾테니스,football🏈미식축구,volleyball🏐배구,boxing🥊권투,yoga🧘요가,fishing🎣낚시,camping🏕️캠핑,game🕹️게임,movie🎬영화"]
+];
+
+var W=[],voice=null,P=[],i=0,target=null,round=0,score=0,locked=false,ROUNDS=10;
+D.forEach(function(c,ci){c[1].split(',').forEach(function(s){var m=s.match(/^([a-z-]+)(.*?)([가-힣].*)$/);if(m)W.push({w:m[1],e:m[2],k:m[3],c:ci})})});
+
+var sel=document.getElementById('cat');
+sel.innerHTML='<option value="all">🌟 전체 ('+W.length+'개)</option>'+D.map(function(c,ci){return '<option value="'+ci+'">'+c[0]+' ('+W.filter(function(x){return x.c===ci}).length+')</option>'}).join('');
+function pool(){return sel.value==='all'?W:W.filter(function(x){return x.c==sel.value})}
+
+function pick(){try{var all=speechSynthesis.getVoices(),v=all.filter(function(x){return /^en[-_]US/i.test(x.lang)});
+ voice=v.find(function(x){return /samantha|jenny|aria|google us english|zira|ava|allison|female/i.test(x.name)})||v[0]||all.find(function(x){return /^en/i.test(x.lang)})||null;
+ document.getElementById('vnote').textContent=voice?'':'⚠️ 영어 음성이 없어요. 기기 설정에서 영어(미국) 음성을 켜 주세요.'}catch(e){}}
+try{speechSynthesis.onvoiceschanged=pick;pick()}catch(e){}
+function say(t,r,cb){try{speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(t.replace(/-/g,' '));u.lang='en-US';if(voice)u.voice=voice;u.rate=r||0.75;u.pitch=1.1;if(cb)u.onend=cb;speechSynthesis.speak(u)}catch(e){if(cb)cb()}}
+function show(id){['home','learn','game'].forEach(function(x){document.getElementById(x).classList.toggle('hidden',x!==id)});if(id==='learn'){P=pool();i=0;render()}if(id==='game')startGame()}
+function cur(){return P[i]}
+function render(){var x=cur();lemoji.textContent=x.e;lword.textContent=x.w.replace(/-/g,' ');lko.textContent=x.k;lmsg.textContent='';lcount.textContent=(i+1)+' / '+P.length;say(x.w)}
+function move(d){i=(i+d+P.length)%P.length;render()}
+function repeat(){lmsg.textContent='👂 잘 들어봐요';say(cur().w,0.6,function(){lmsg.textContent='🎤 이제 크게 따라 말해요!';setTimeout(function(){lmsg.textContent='⭐ 잘했어요! Great! ⭐';lmsg.classList.remove('pop');void lmsg.offsetWidth;lmsg.classList.add('pop');say('Great job!',0.85)},3000)})}
+function shuffle(a){return a.slice().sort(function(){return Math.random()-.5})}
+function startGame(){P=pool();round=0;score=0;end.classList.add('hidden');choices.classList.remove('hidden');next()}
+function next(){locked=false;gmsg.textContent='';gstars.textContent='⭐'.repeat(score);
+ if(round>=ROUNDS){choices.classList.add('hidden');end.classList.remove('hidden');say('Wow! You did it!',0.85);return}
+ var s=shuffle(P);target=s[0];var o=[target],seen={};seen[target.e]=1;
+ for(var k=1;k<s.length&&o.length<3;k++){if(!seen[s[k].e]){seen[s[k].e]=1;o.push(s[k])}}
+ choices.innerHTML='';shuffle(o).forEach(function(x){var d=document.createElement('div');d.className='choice';d.textContent=x.e;d.onclick=function(){answer(x,d)};choices.appendChild(d)});
+ setTimeout(function(){say(target.w)},300)}
+function answer(x,d){if(locked)return;
+ if(x===target){locked=true;score++;round++;gmsg.textContent='🎉 정답! '+x.w.replace(/-/g,' ');d.classList.add('pop');gstars.textContent='⭐'.repeat(score);say('Yes! '+x.w,0.8,function(){setTimeout(next,500)})}
+ else{d.classList.remove('shake');void d.offsetWidth;d.classList.add('shake');gmsg.textContent='🤔 다시 들어봐요';gmsg.style.color='#ff7aa8';setTimeout(function(){gmsg.style.color='';say(target.w)},500)}}
+document.addEventListener('click',function(){if(!voice)pick()},{once:true});
+</script>
+</body>
+</html>
